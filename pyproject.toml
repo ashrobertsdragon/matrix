@@ -2,9 +2,24 @@
 name = "uv-script-test-matrix"
 version = "1.0.0"
 description = "Test a script against multiple Python versions using uv."
+keywords = ["uv", "python", "matrix", "test", "script"]
 readme = "README.md"
-license = { "text" = "MIT" }
+license = { text = "MIT" }
+authors = [{ name = "Ashlynn Antrobus", email = "ashlynn@prosepal.io"}]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Interface :: Command Line",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+requires-python = ">=3.10"
 dependencies = []
 
-[project.scripts]
-matrix = "uv_script_matrix:main"
+[tool.ruff]
+line-length = 80
+target-version = "py310"

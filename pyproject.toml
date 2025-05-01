@@ -1,0 +1,10 @@
+[project]
+name = "uv-script-test-matrix"
+version = "1.0.0"
+description = "Test a script against multiple Python versions using uv."
+readme = "README.md"
+license = { "text" = "MIT" }
+dependencies = []
+
+[project.scripts]
+matrix = "uv_script_matrix:main"

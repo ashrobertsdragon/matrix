@@ -27,7 +27,7 @@ from rich.text import Text
 console = Console()
 
 
-def validate_version(v: str) -> Version | None:
+def validate_version(v: str) -> str | None:
     """
     Validate a version string.
 
@@ -35,13 +35,31 @@ def validate_version(v: str) -> Version | None:
         v (str): The version string to validate.
 
     Returns:
-        Version: The validated version string if valid, None otherwise.
+        str: The validated version string.
+        None if the version string is invalid.
     """
+    gil = True
+    no_gil = "+freethreaded"
     try:
+        if v.endswith(no_gil):
+            gil = False
+            v = v.removesuffix(no_gil)
+
         version = Version(v)
         if version.major != 3:
-            raise ValueError(f"Warning: Only Python 3 is supported (got {v})")
-        return version
+            raise ValueError(f"Error: Only Python 3 is supported (got {v})")
+        if version.minor < 8:
+            raise ValueError(f"Error: Python 3.8 or higher is required (got {v})")
+        if not gil and version.minor < 13:
+            warnings.warn(
+                (
+                    "Warning: Python 3.13 or higher required for GIL-free "
+                    f"mode (got {v})"
+                ),
+                RuntimeWarning
+            )
+            gil = True
+        return f"{v}{'' if gil else '+freethreaded'}"
     except InvalidVersion:
         warnings.warn(f"Warning: Invalid version string: {v}", RuntimeWarning)
         return None
@@ -58,8 +76,7 @@ def resolve_versions(versions: list[str]) -> list[str]:
         list[str]: A list of resolved version strings.
     """
     if "-" not in versions[0]:
-        print(len(versions))
-        return [v for v in versions if validate_version(v)]
+        return [version for v in versions if (version := validate_version(v))]
 
     if len(versions) != 1:
         raise ValueError("Range mode only supports one argument")
@@ -73,9 +90,8 @@ def resolve_versions(versions: list[str]) -> list[str]:
 
     if min_version.micro != 0 or max_version.micro != 0:
         warnings.warn(
-            "Warning: Patch versions will be ignored in range mode. "
+            "Warning: Patch versions are ignored. "
             "Only minor versions are used.\n"
-            "To use patch versions, specify versions individually"
         )
 
     return [
@@ -211,7 +227,7 @@ def create_parser() -> argparse.Namespace:
         "--versions",
         help=(
             "Python versions to test against "
-            "as individual Python 3.x or 3.x.x versions (e.g. 3.10 3.13.2). "
+            "as individual Python 3.x versions (e.g. 3.10 3.13). "
             "Note: Cannot be used with --range."
         ),
         metavar="VERSION",

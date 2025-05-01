@@ -1,33 +1,29 @@
 # uv Script Test Matrix
 
-This script (`test-matrix.py`) allows you to easily test another Python script against a matrix of different Python 3 versions using the `uv` package manager's powerful `uv run --script` functionality.
+This script (`matrix.py`) provides a streamlined method for testing a Python script across a matrix of Python 3 versions. It serves as a focused utility for basic version compatibility validation, offering a less involved setup compared to comprehensive matrix testing frameworks such as tox or nox.  allows you to easily test another Python script against a matrix of different Python 3 versions using the `uv` package manager's powerful `uv run` functionality.
 
-It sets up the necessary environment for each specified Python version and runs your target script, reporting the results for each version.
+uv Script Test Matrix utilizes the `uv` package manager's `uv run` functionality and PEP 723 support to set up the necessary environment for each specified Python version, including installing the Python interpreter if need be, and runs your target script, reporting the results for each version.
 
 ## Prerequisites
 
 * `uv` must be installed and available in your system's PATH. You can install `uv` from [https://github.com/astral-sh/uv](https://github.com/astral-sh/uv). Additional installation methods and instructions can be found at [https://docs.astral.sh/uv/getting-started/installation/#installation-methods](https://docs.astral.sh/uv/getting-started/installation/#installation-methods).
 
+* An active internet connection is needed to install the script's dependencies, Python versions under test, and `uv Script Test Matrix`'s dependencies if they have not already been cached by `uv`.
+
 ## Installation and Running
 
-This script uses `uv run --script` itself, which handles its own dependencies (`packaging`, `rich`). This means you don't need to manually install those libraries.
+This script uses `uv run` itself, which handles its own dependencies (`packaging`, `rich`). This means you don't need to manually install those libraries.
 
-Simply run the script directly using `uv run`:
-
-```bash
-uv run matrix [OPTIONS] SCRIPT [SCRIPT_ARGS...]
-```
-
-or
+Simply run the script directly using `uvx`:
 
 ```bash
-uv run test-matrix.py [OPTIONS] SCRIPT [SCRIPT_ARGS...]
+uv run matrix.py [OPTIONS] SCRIPT [SCRIPT_ARGS...]
 ```
 
 ## Usage
 
 ```text
-uv run matrix [-h] [-v VERSION [VERSION ...]] [-r MIN_VERSION-MAX_VERSION] [-a ARG [ARG ...]] [-e ENV_FILE] [-l] [-t TIMEOUT] SCRIPT
+uv run matrix.py [-h] [-v VERSION [VERSION ...]] [-r MIN_VERSION-MAX_VERSION] [-a ARG [ARG ...]] [-e ENV_FILE] [-l] [-t TIMEOUT] SCRIPT
 ```
 
 ### Arguments
@@ -39,9 +35,11 @@ uv run matrix [-h] [-v VERSION [VERSION ...]] [-r MIN_VERSION-MAX_VERSION] [-a A
 Plus one of the following options:
 
 * `-v VERSION [VERSION ...]`, `--versions VERSION [VERSION ...]`:
-    Specify one or more exact Python 3 versions to test against (e.g., `3.10`, `3.12.1`, `3.13`). This option cannot be used with `--range`.
+    Specify one or more Python 3 versions to test against (e.g., `3.10`, `3.12`, `3.13`). This option cannot be used with `--range`.
 * `-r MIN_VERSION-MAX_VERSION`, `--range MIN_VERSION-MAX_VERSION`:
-    Specify a range of Python 3 minor versions to test against (e.g., `3.10-3.13`). The script will test all minor versions within this inclusive range (`3.10`, `3.11`, `3.12`, `3.13`). Note that patch versions (e.g., `3.10.5-3.13.0`) are ignored for the range calculation; only the major and minor versions determine the range boundaries.
+    Specify a range of Python 3 versions to test against (e.g., `3.10-3.13`). The script will test all minor versions within this inclusive range (`3.10`, `3.11`, `3.12`, `3.13`).
+
+Note that patch versions (e.g., `3.10.5`) are ignored; only the major and minor versions are used.
 
 #### Optional Arguments
 
@@ -60,7 +58,7 @@ The script iterates through the specified Python versions. For each version, it 
 
 ## Dependencies
 
-The script itself depends on `packaging` (for version parsing) and `rich` (for formatted output). These dependencies are automatically handled by `uv run --script` based on the `/// script` block in the script file.
+The script itself depends on `packaging` (for version parsing) and `rich` (for formatted output). These dependencies are automatically handled by `uv run` based on the `/// script` block of PEP 723 inline metadata in the script file.
 
 ## Output
 
@@ -81,26 +79,30 @@ If logging is enabled with `-l`, the full standard output and standard error of 
 
 ## Examples
 
-Test a script `my_script.py` against Python 3.9, 3.10, and 3.12:
+Test a script `my_script.py` against Python 3.9 and 3.12:
 
 ```bash
-uv run test-matrix.py -v 3.9 3.10 3.12 my_script.py
+uv run matrix.py -v 3.9 3.12 my_script.py
 ```
 
 Test a script `another_script.py` against a range of Python versions (3.11, 3.12, 3.13), passing arguments `arg1` and `arg2`, loading environment variables from `.env` in the script's directory, and setting a 120-second timeout:
 
 ```bash
-uv run test-matrix.py -r 3.11-3.13 -a arg1 arg2 -e .env -t 120 another_script.py
+uv run matrix.py -r 3.11-3.13 -a arg1 arg2 -e .env -t 120 another_script.py
 ```
 
-Test a script `setup.py` against Python 3.8 with logging enabled:
+Test a script `test.py` against Python 3.8 with logging enabled:
 
 ```bash
-uv run --script test-matrix.py -v 3.8 -l setup.py
+uv run matrix.py -v 3.8 -l setup.py
 ```
 
 ## Notes
 
 * Only Python 3.x is supported
-* When using --range, only minor versions are considered (patch versions are ignored)
-* For testing with specific patch versions (e.g., 3.10.2), use the --versions option
+* Only minor versions are considered (patch versions are ignored)
+* Only CPython versions are supported at this time.
+
+## License
+
+The `uv Script Test Matrix` is licensed under the [MIT license](https://opensource.org/licenses/MIT). `uv` is licensed dually under [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0) and MIT license. Python is licensed under the [Python Software Foundation License 2](https://docs.python.org/3/license.html) and, since Python 3.8.6, the [Zero-Clause BSD License](https://docs.python.org/3/license.html#bsd0) with additional open source licenses for some stdlib code, all available at the PSF License page.

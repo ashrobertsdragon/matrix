@@ -15,15 +15,19 @@ This script uses `uv run --script` itself, which handles its own dependencies (`
 Simply run the script directly using `uv run`:
 
 ```bash
-uv run test-matrix.py [OPTIONS] SCRIPT [SCRIPT_ARGS...]
+uv run matrix [OPTIONS] SCRIPT [SCRIPT_ARGS...]
 ```
 
-Replace `test-matrix.py` with the actual path to where you saved the script.
+or
+
+```bash
+uv run test-matrix.py [OPTIONS] SCRIPT [SCRIPT_ARGS...]
+```
 
 ## Usage
 
 ```text
-uv run --script test-matrix.py [-h] [-v VERSION [VERSION ...]] [-r MIN_VERSION-MAX_VERSION] [-a ARG [ARG ...]] [-e ENV_FILE] [-l] [-t TIMEOUT] SCRIPT
+uv run matrix [-h] [-v VERSION [VERSION ...]] [-r MIN_VERSION-MAX_VERSION] [-a ARG [ARG ...]] [-e ENV_FILE] [-l] [-t TIMEOUT] SCRIPT
 ```
 
 ### Arguments
